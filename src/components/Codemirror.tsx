@@ -21,8 +21,6 @@ const getModeOption = (mode: IMode) => {
   return mode;
 };
 const Wrapper = styled.div`
-  width: 90%;
-  margin: auto;
   border: 1px solid #ccc;
 `;
 const Textarea = styled.textarea`

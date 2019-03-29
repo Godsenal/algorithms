@@ -1,20 +1,17 @@
-import React, { useEffect } from "react";
-import { observer } from "mobx-react-lite";
-import { PostList } from "./containers";
-import postStore from "./store/postStore";
+import React from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { Home, PostEdit, PostView } from "./pages";
 
-import { Editor } from "./containers";
-
-const App = observer(() => {
-  useEffect(() => {
-    postStore.fetchPosts();
-  }, []);
+const App = () => {
   return (
-    <div>
-      <Editor />
-      <PostList state={postStore.fetchState} posts={postStore.posts} />
-    </div>
+    <Router>
+      <Switch>
+        <Route exact path="/" component={Home} />
+        <Route exact path="/post/:postId" component={PostView} />
+        <Route exact path="/editor" component={PostEdit} />
+      </Switch>
+    </Router>
   );
-});
+};
 
 export default App;
