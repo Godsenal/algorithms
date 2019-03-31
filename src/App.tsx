@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Home, PostEdit, PostView } from "./pages";
-
 const App = () => {
   return (
     <Router>

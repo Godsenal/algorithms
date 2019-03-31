@@ -1,12 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { observer } from "mobx-react-lite";
 import { PageHeader, Button } from "antd";
 import { Layout, AlignRight } from "../styles/Common";
 import { PostList } from "../containers";
-import postStore from "../store/postStore";
 import { Link } from "react-router-dom";
+import storeContext from "../contexts/storeContext";
 
 const App = observer(() => {
+  const { postStore } = useContext(storeContext);
   useEffect(() => {
     if (postStore.fetchState === "INIT") {
       postStore.fetchPosts();

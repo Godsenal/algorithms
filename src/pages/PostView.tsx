@@ -1,16 +1,17 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useContext } from "react";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";
-import postStore from "../store/postStore";
 import { Layout } from "../styles/Common";
 import { PageHeader } from "antd";
 import { Codemirror } from "../components";
+import storeContext from "../contexts/storeContext";
 
 interface IMatchParams {
   postId: string;
 }
 const PostView: React.SFC<RouteComponentProps<IMatchParams>> = observer(
   ({ match }) => {
+    const { postStore } = useContext(storeContext);
     const currentPost = useMemo(
       () => postStore.currentPost(match.params.postId),
       [match]

@@ -51,5 +51,4 @@ export class PostStore {
   }
 }
 
-const postStore = new PostStore();
-export default postStore;
+export default PostStore;

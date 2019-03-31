@@ -1,13 +1,13 @@
-import React, { useRef } from "react";
+import React, { useRef, useContext } from "react";
 import { observer, useObservable } from "mobx-react-lite";
 import { EditorFromTextArea } from "codemirror";
 import { Input, Button } from "antd";
 import styled from "styled-components";
-import { Codemirror, SelectMode } from "../components";
+import { Codemirror, SelectMode, SelectTag } from "../components";
 import { IMode } from "../models/codemirror";
 import { INewPost } from "../models/post";
-import postStore from "../store/postStore";
 import { MarginTop } from "../styles/Common";
+import storeContext from "../contexts/storeContext";
 
 const Title = styled(Input)`
   font-size: 20px;
@@ -25,6 +25,7 @@ const initialPost: INewPost = {
   mode: "c++"
 };
 const Editor = observer(() => {
+  const { postStore } = useContext(storeContext);
   const post = useObservable(initialPost);
   const codeEditor = useRef<EditorFromTextArea | null>(null);
   const setCodeEditor = (editor: EditorFromTextArea) => {
@@ -67,6 +68,7 @@ const Editor = observer(() => {
         <label htmlFor="problem">Problem</label>
         <Input.TextArea
           id="problem"
+          autosize
           value={post.problem}
           onChange={handlePlainText("problem")}
           rows={6}
@@ -90,10 +92,15 @@ const Editor = observer(() => {
         <label htmlFor="description">Description</label>
         <Input.TextArea
           id="problem"
+          autosize
           value={post.description}
           onChange={handlePlainText("description")}
           rows={6}
         />
+      </MarginTop>
+      <MarginTop>
+        <label>Tags</label>
+        <SelectTag />
       </MarginTop>
       <MarginTop>
         <AlignRight>
