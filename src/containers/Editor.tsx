@@ -8,6 +8,7 @@ import { IMode } from "../models/codemirror";
 import { INewPost } from "../models/post";
 import { MarginTop } from "../styles/Common";
 import storeContext from "../contexts/storeContext";
+import { INewTag } from "../models/tag";
 
 const Title = styled(Input)`
   font-size: 20px;
@@ -22,7 +23,8 @@ const initialPost: INewPost = {
   problem: "",
   code: "",
   description: "",
-  mode: "c++"
+  mode: "c++",
+  tags: []
 };
 const Editor = observer(() => {
   const { postStore } = useContext(storeContext);
@@ -38,7 +40,7 @@ const Editor = observer(() => {
     post[type] = e.target.value;
   };
   const setMode = (mode: IMode) => (post.mode = mode);
-
+  const setTags = (tags: INewTag[]) => (post.tags = tags);
   const reset = () => {
     Object.keys(post).forEach(field => {
       const assert = field as keyof INewPost;
@@ -100,7 +102,7 @@ const Editor = observer(() => {
       </MarginTop>
       <MarginTop>
         <label>Tags</label>
-        <SelectTag />
+        <SelectTag handleChange={setTags} />
       </MarginTop>
       <MarginTop>
         <AlignRight>
