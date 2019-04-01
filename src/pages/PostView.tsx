@@ -1,8 +1,8 @@
-import React, { useMemo, useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import styled from "styled-components";
-import { observer } from "mobx-react-lite";
+import { observer, useObservable } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";
-import { Tag } from "antd";
+import { Tag, Spin } from "antd";
 import { Layout } from "../styles/Common";
 import { Codemirror } from "../components";
 import storeContext from "../contexts/storeContext";
@@ -22,15 +22,24 @@ interface IMatchParams {
 }
 const PostView: React.SFC<RouteComponentProps<IMatchParams>> = observer(
   ({ match }) => {
+    const fetchState = useObservable({ initialLoad: false });
     const { postStore } = useContext(storeContext);
-    const currentPost = useMemo(
-      () => postStore.currentPost(match.params.postId),
-      [match]
-    );
-    if (!currentPost) {
+    useEffect(() => {
+      postStore.getPost(match.params.postId).then(() => {
+        fetchState.initialLoad = true;
+      });
+    }, []);
+    if (!fetchState.initialLoad || !postStore.post) {
       return null;
     }
-    const { title, problem, description, code, mode, tags } = currentPost;
+    if (postStore.getState === "FETCHING") {
+      return (
+        <Layout>
+          <Spin />
+        </Layout>
+      );
+    }
+    const { title, problem, description, code, mode, tags } = postStore.post;
     return (
       <Layout>
         <h1>{title}</h1>
@@ -40,7 +49,7 @@ const PostView: React.SFC<RouteComponentProps<IMatchParams>> = observer(
           </Language>
           <div>
             {tags.map((tag, i) => (
-              <Tag key={i}>{tag.name}</Tag>
+              <Tag key={i}>{tag}</Tag>
             ))}
           </div>
         </PostInfo>

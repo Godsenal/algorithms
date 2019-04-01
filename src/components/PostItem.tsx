@@ -16,7 +16,7 @@ const PostItem: React.SFC<IPost> = ({
       <Codemirror value={code} mode={mode} readOnly />
       <ul>
         {tags.map(tag => (
-          <li>{tag.name}</li>
+          <li>{tag}</li>
         ))}
       </ul>
     </>

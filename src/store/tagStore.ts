@@ -1,7 +1,7 @@
 import { observable, action, runInAction } from "mobx";
+import * as tagApi from "../api/tag";
 import { ITag } from "../models/tag";
 
-const fakeFetching = () => new Promise(res => setTimeout(res, 2000));
 class TagStore {
   @observable tags: ITag[] = [];
   @observable fetchState: State = "INIT";
@@ -11,13 +11,12 @@ class TagStore {
     this.tags = [];
     this.fetchState = "FETCHING";
     try {
-      await fakeFetching();
+      const {
+        data: { payload }
+      } = await tagApi.getTags();
       runInAction(() => {
+        this.tags = payload;
         this.fetchState = "SUCCESS";
-        this.tags = [...Array(5)].map((_, i) => ({
-          _id: i.toString(10),
-          name: `tag${i}`
-        }));
       });
     } catch (err) {
       runInAction(() => {

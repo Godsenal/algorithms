@@ -1,11 +1,10 @@
 import { observable, action, computed, runInAction } from "mobx";
 import * as postApi from "../api/post";
-import { IPost, INewPost } from "../models/post";
+import { IPost, INewPost, IPostQuery } from "../models/post";
 import { IMode } from "../models/codemirror";
 import { INewTag } from "../models/tag";
 
 export class Post implements INewPost {
-  @observable _id?: string = "";
   @observable title: string = "";
   @observable problem: string = "";
   @observable mode: IMode = "c++";
@@ -19,19 +18,34 @@ export class Post implements INewPost {
 }
 
 export class PostStore {
+  @observable post: IPost | null = null;
   @observable posts: IPost[] = [];
-  @observable fetchState: State = "INIT";
-  @observable addState: State = "INIT";
+  @observable getState: State = "INIT"; // get current postview
+  @observable fetchState: State = "INIT"; // get post list
+  @observable addState: State = "INIT"; // add post
+
+  @observable isLast = false;
 
   @action
-  async fetchPosts() {
+  async fetchPosts(query?: IPostQuery) {
+    const isInit = !query || !query.offset;
+    // 초기 로드일 때 isLast를 원상태로.
+    if (isInit) {
+      this.isLast = false;
+    }
     this.fetchState = "FETCHING";
     try {
       const {
         data: { payload }
-      } = await postApi.getPosts();
+      } = await postApi.getPosts(query);
       runInAction(() => {
-        this.posts = payload;
+        // length 0이면 isLast = true
+        if (payload.length === 0) {
+          this.isLast = true;
+        }
+        isInit
+          ? (this.posts = payload)
+          : (this.posts = [...this.posts, ...payload]);
         this.fetchState = "SUCCESS";
       });
     } catch (err) {
@@ -42,20 +56,42 @@ export class PostStore {
   }
 
   @action
-  addPost(post: INewPost) {
+  async addPost(post: INewPost) {
     this.addState = "FETCHING";
     const newPost = new Post(post);
-    setTimeout(
-      action(() => {
-        this.posts.push(newPost as IPost); // 서버 패치전 까지 임시
+    try {
+      const {
+        data: { payload }
+      } = await postApi.postPost(newPost);
+      if (payload) {
         this.addState = "SUCCESS";
-      }),
-      1000
-    );
+      }
+    } catch (err) {
+      this.addState = "FAILURE";
+    }
   }
 
-  currentPost(postId: string): IPost {
-    return this.posts.find(post => post._id === postId);
+  @action
+  async getPost(postId: string) {
+    try {
+      const {
+        data: { payload }
+      } = await postApi.getPost(postId);
+      this.post = null;
+      this.getState = "FETCHING";
+      runInAction(() => {
+        if (!payload) {
+          this.getState = "FAILURE";
+        } else {
+          this.post = payload;
+          this.getState = "SUCCESS";
+        }
+      });
+    } catch (err) {
+      runInAction(() => {
+        this.getState = "FAILURE";
+      });
+    }
   }
 }
 

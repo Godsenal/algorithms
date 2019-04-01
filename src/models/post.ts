@@ -8,9 +8,15 @@ export interface IPost {
   description: string;
   mode: IMode;
   code: string;
-  tags: ITag[];
+  tags: string[];
 }
 
 export type INewPost = Omit<PartialBy<IPost, "_id">, "tags"> & {
   tags: INewTag[];
 };
+
+export interface IPostQuery {
+  limit?: number;
+  offset?: string; // Object ID
+  query?: string; // Search Query
+}
