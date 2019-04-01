@@ -1,35 +1,37 @@
-import React, { useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Select } from "antd";
+import storeContext from "../contexts/storeContext";
+import { INewTag, ITag } from "../models/tag";
+import { observer } from "mobx-react-lite";
 
 const Option = Select.Option;
 
-const data = ["zzzz", "gggg", "aaaa", "bbbb"];
-const SelectTag = () => {
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [options, setOptions] = useState(data);
-  const handleChange = (value: string[]) => {
-    setSelectedItems(value);
-  };
-  const handleSearch = (value: string) => {
-    setTimeout(() => {
-      const reg = new RegExp(value);
-      setOptions(data.filter(item => item.match(reg)));
-    }, 1000);
+const SelectTag: React.SFC<{
+  handleChange: (tags: INewTag[]) => void;
+}> = observer(({ handleChange }) => {
+  const { tagStore } = useContext(storeContext);
+  const [tags, setTags] = useState<ITag[]>([]);
+  useEffect(() => {
+    tagStore.fetchAllTags().then(() => {
+      setTags(tagStore.tags);
+    });
+  }, []);
+  const handleTagChange = (value: INewTag[]) => {
+    handleChange(value);
   };
   return (
     <Select
-      mode="multiple"
-      value={selectedItems}
+      mode="tags"
       style={{ width: "100%" }}
       placeholder="Select Tags"
-      onChange={handleChange}
-      onSearch={handleSearch}
+      onChange={handleTagChange}
+      loading={tagStore.fetchState === "FETCHING"}
     >
-      {options.map((value, i) => (
-        <Option key={i}>{value}</Option>
+      {tags.map(tag => (
+        <Option key={tag.name}>{tag.name}</Option>
       ))}
     </Select>
   );
-};
+});
 
 export default SelectTag;

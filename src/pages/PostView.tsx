@@ -1,11 +1,22 @@
 import React, { useMemo, useContext } from "react";
+import styled from "styled-components";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";
+import { Tag } from "antd";
 import { Layout } from "../styles/Common";
-import { PageHeader } from "antd";
 import { Codemirror } from "../components";
 import storeContext from "../contexts/storeContext";
 
+const SubTitle = styled.h2`
+  font-style: italic;
+`;
+const PostInfo = styled.div`
+  text-align: right;
+`;
+const Language = styled.div`
+  margin-right: 8px;
+`;
+const Mode = styled.h3``;
 interface IMatchParams {
   postId: string;
 }
@@ -19,15 +30,26 @@ const PostView: React.SFC<RouteComponentProps<IMatchParams>> = observer(
     if (!currentPost) {
       return null;
     }
-    const { title, problem, description, code, mode } = currentPost;
+    const { title, problem, description, code, mode, tags } = currentPost;
     return (
       <Layout>
-        <PageHeader title={title} />
+        <h1>{title}</h1>
+        <PostInfo>
+          <Language>
+            <span>Language: {mode}</span>
+          </Language>
+          <div>
+            {tags.map((tag, i) => (
+              <Tag key={i}>{tag.name}</Tag>
+            ))}
+          </div>
+        </PostInfo>
+        <SubTitle>Problem</SubTitle>
         <p>{problem}</p>
-        <div>
-          <span>{mode}</span>
-        </div>
+        <SubTitle>Code</SubTitle>
+        <Mode>{mode}</Mode>
         <Codemirror value={code} mode={mode} readOnly />
+        <SubTitle>description</SubTitle>
         <p>{description}</p>
       </Layout>
     );

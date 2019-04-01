@@ -8,12 +8,16 @@ class TagStore {
 
   @action
   async fetchAllTags() {
+    this.tags = [];
     this.fetchState = "FETCHING";
     try {
       await fakeFetching();
       runInAction(() => {
         this.fetchState = "SUCCESS";
-        this.tags.push({ _id: "ff", name: "hello" });
+        this.tags = [...Array(5)].map((_, i) => ({
+          _id: i.toString(10),
+          name: `tag${i}`
+        }));
       });
     } catch (err) {
       runInAction(() => {
