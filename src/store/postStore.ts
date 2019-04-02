@@ -60,14 +60,16 @@ export class PostStore {
     this.addState = "FETCHING";
     const newPost = new Post(post);
     try {
-      const {
-        data: { payload }
-      } = await postApi.postPost(newPost);
-      if (payload) {
-        this.addState = "SUCCESS";
-      }
+      const { data } = await postApi.postPost(newPost);
+      runInAction(() => {
+        if (data) {
+          this.addState = "SUCCESS";
+        }
+      });
     } catch (err) {
-      this.addState = "FAILURE";
+      runInAction(() => {
+        this.addState = "FAILURE";
+      });
     }
   }
 

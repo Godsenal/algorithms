@@ -14,11 +14,11 @@ export const getPost: RequestHandler = async (req, res, next) => {
 };
 export const getPosts: RequestHandler = async (req, res, next) => {
   try {
-    const { limit, offset, query } = req.query;
+    const { limit, offset, search } = req.query;
     /* Set Query option */
     const option = {
-      ...(query && {
-        $or: [{ title: new RegExp(query) }, { tags: query }, { mode: query }]
+      ...(search && {
+        $or: [{ title: new RegExp(search) }, { tags: search }, { mode: search }]
       }),
       ...(offset && {
         _id: { $gt: offset }
@@ -49,7 +49,7 @@ export const addPost: RequestHandler = async (req, res, next) => {
     }
     const success = await post.save();
     return res.json({
-      success: !!success
+      payload: !!success
     });
   } catch (err) {
     next(err);

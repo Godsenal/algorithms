@@ -9,14 +9,15 @@ export interface IPost {
   mode: IMode;
   code: string;
   tags: string[];
+  createdAt: string;
 }
 
-export type INewPost = Omit<PartialBy<IPost, "_id">, "tags"> & {
+export type INewPost = Omit<PartialBy<IPost, "_id" | "createdAt">, "tags"> & {
   tags: INewTag[];
 };
 
 export interface IPostQuery {
   limit?: number;
   offset?: string; // Object ID
-  query?: string; // Search Query
+  search?: string; // Search Query
 }

@@ -5,7 +5,7 @@ const App = () => {
   return (
     <Router>
       <Switch>
-        <Route exact path="/" component={Home} />
+        <Route exact path="/posts" component={Home} />
         <Route exact path="/post/:postId" component={PostView} />
         <Route exact path="/editor" component={PostEdit} />
       </Switch>

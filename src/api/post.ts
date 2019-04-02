@@ -1,4 +1,5 @@
 import axios from "axios";
+import queryString from "query-string";
 import { IPost, INewPost, IPostQuery } from "../models/post";
 
 const instance = axios.create({
@@ -9,16 +10,8 @@ const getPost = (postId: string) => {
   return instance.get<ApiResponse<IPost>>(`?postId=${postId}`);
 };
 const getPosts = (query?: IPostQuery) => {
-  let url = "";
-  if (query) {
-    url = "?";
-    Object.entries(query).forEach(([key, value]) => {
-      if (value) {
-        url += `${key}=${value}&`;
-      }
-    });
-    url = url.slice(0, -1); // remove last character(must be & or ?)
-  }
+  const url = query ? `?${queryString.stringify(query)}` : "";
+  console.log(url);
   return instance.get<ApiResponse<IPost[]>>(`/list${url}`);
 };
 
