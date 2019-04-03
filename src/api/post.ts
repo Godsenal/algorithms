@@ -11,7 +11,6 @@ const getPost = (postId: string) => {
 };
 const getPosts = (query?: IPostQuery) => {
   const url = query ? `?${queryString.stringify(query)}` : "";
-  console.log(url);
   return instance.get<ApiResponse<IPost[]>>(`/list${url}`);
 };
 

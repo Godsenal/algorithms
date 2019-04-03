@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import styled from "styled-components";
 import { Tag } from "antd";
 import { format } from "date-fns";
-import { Codemirror } from ".";
+import { SearchLink } from ".";
 import { IPost } from "../models/post";
 import { Link } from "react-router-dom";
 
@@ -69,7 +69,9 @@ const PostItem: React.SFC<IPost> = ({
         </Mode>
         <Tags>
           {tags.map(tag => (
-            <Tag key={tag}>{tag}</Tag>
+            <Tag key={tag}>
+              <SearchLink query={tag} />
+            </Tag>
           ))}
         </Tags>
       </Footer>

@@ -4,7 +4,7 @@ import { observer, useObservable } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";
 import { Tag, Spin } from "antd";
 import { Layout } from "../styles/Common";
-import { Codemirror } from "../components";
+import { Codemirror, SearchLink } from "../components";
 import storeContext from "../contexts/storeContext";
 
 const SubTitle = styled.h2`
@@ -45,11 +45,15 @@ const PostView: React.SFC<RouteComponentProps<IMatchParams>> = observer(
         <h1>{title}</h1>
         <PostInfo>
           <Language>
-            <span>Language: {mode}</span>
+            <SearchLink query={mode}>
+              <span>Language: {mode}</span>
+            </SearchLink>
           </Language>
           <div>
             {tags.map((tag, i) => (
-              <Tag key={i}>{tag}</Tag>
+              <Tag key={i}>
+                <SearchLink query={tag} />
+              </Tag>
             ))}
           </div>
         </PostInfo>

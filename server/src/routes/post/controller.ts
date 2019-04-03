@@ -15,18 +15,25 @@ export const getPost: RequestHandler = async (req, res, next) => {
 export const getPosts: RequestHandler = async (req, res, next) => {
   try {
     const { limit, offset, search } = req.query;
+    /* escape special chracter like c++ */
+    const escaped = search ? search.replace(/[+]/g, "\\$&") : "";
     /* Set Query option */
     const option = {
       ...(search && {
-        $or: [{ title: new RegExp(search) }, { tags: search }, { mode: search }]
+        $or: [
+          { title: new RegExp(escaped) },
+          { tags: search },
+          { mode: search }
+        ]
       }),
       ...(offset && {
-        _id: { $gt: offset }
+        _id: { $lt: offset } // _id로 내림차순 정렬하기 때문에 lt로 해줘야 적절한 offset 설정 가능.
       })
     };
-    const postQuery = Post.find(option);
+    const postQuery = Post.find(option).sort({ _id: -1 });
     /* Set limit option */
     postQuery.limit(parseInt(limit || 10));
+    /* Set order option */
     const posts = await postQuery.exec();
     return res.json({
       payload: posts
